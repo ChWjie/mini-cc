@@ -1,0 +1,11 @@
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+.memory/
+.tasks/
+.mailboxes/
+.worktrees/
+.transcripts/
+.task_outputs/
+.scheduled_tasks.json
