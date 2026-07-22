@@ -2,25 +2,29 @@
 
 ## Overview
 
-mini-cc is a hands-on Python course for building a small terminal coding agent from first principles. The repository contains 20 lesson directories. Each lesson has an independently readable `code.py` implementation and a companion `README.md` explaining the mechanism introduced in that stage.
+mini-cc is a 20-lesson Python course for building a small terminal coding agent from first principles. Each lesson provides an independently runnable `code.py` and a companion `README.md`. The progression starts with a minimal agent loop and ends with an integrated agent that combines tools, context management, task orchestration, multi-agent collaboration, Git Worktrees, and dynamic MCP tools.
 
-## Current Status
+## Status
 
-- Completed: s01-s14 (14/20 lessons, 70%)
-- Latest milestone: s14 Cron Scheduler
-- Planned: s15-s20
-- The root `README.md` contains setup instructions, architecture, detailed progress, and the roadmap.
+- Completed: s01-s20 (20/20 lessons, 100%)
+- Final milestone: s20 Comprehensive Agent
+- Syntax validation: all lesson modules pass Python compilation
+- Offline smoke validation: team protocols, autonomous task discovery, Git Worktrees, MCP discovery, and s20 integration components pass
+- Online model calls require a local `.env` with a valid API key
 
-Later lessons are focused teaching snapshots. They preserve the main agent structure but may omit an earlier advanced subsystem when that keeps the current lesson easier to understand. The complete integration is planned for s20.
+The lesson directories are focused teaching snapshots. Some intermediate lessons intentionally omit an earlier complex subsystem to keep the current topic readable. s20 recombines the representative mechanisms into one loop.
 
 ## Technology Stack
 
 - Language: Python 3.10+
 - LLM client: Anthropic Python SDK
-- Provider support: Anthropic API and Anthropic-compatible endpoints through `ANTHROPIC_BASE_URL`
+- Provider support: Anthropic API and compatible endpoints through `ANTHROPIC_BASE_URL`
 - Configuration: python-dotenv
-- Serialization: JSON and PyYAML
-- Testing: pytest is included; broader automated coverage is still planned
+- Serialization: JSON, JSONL, and PyYAML
+- Concurrency: Python threads, queues, and locks
+- Isolation: Git Worktree
+- Extension model: teaching MCP client with dynamic tool discovery
+- Testing dependency: pytest, with broader automated coverage planned
 
 ## Lessons
 
@@ -40,13 +44,15 @@ Later lessons are focused teaching snapshots. They preserve the main agent struc
 | s12 | Task System | Complete |
 | s13 | Background Tasks | Complete |
 | s14 | Cron Scheduler | Complete |
-| s15 | Agent Teams | Planned |
-| s16 | Team Protocols | Planned |
-| s17 | Autonomous Agents | Planned |
-| s18 | Worktree Isolation | Planned |
-| s19 | MCP Plugin | Planned |
-| s20 | Comprehensive Integration | Planned |
+| s15 | Agent Teams | Complete |
+| s16 | Team Protocols | Complete |
+| s17 | Autonomous Agents | Complete |
+| s18 | Worktree Isolation | Complete |
+| s19 | MCP Plugin | Complete |
+| s20 | Comprehensive Integration | Complete |
 
 ## Runtime Data
 
-Local secrets and generated state are ignored by Git, including `.env`, `.memory/`, `.tasks/`, `.transcripts/`, `.task_outputs/`, `.worktrees/`, and `.scheduled_tasks.json`.
+Local secrets and generated state are ignored by Git, including `.env`, `.memory/`, `.tasks/`, `.transcripts/`, `.task_outputs/`, `.worktrees/`, `.mailboxes/`, and `.scheduled_tasks.json`.
+
+See the root `README.md` for architecture, setup, detailed capabilities, validation, limitations, and post-course engineering work.
