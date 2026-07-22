@@ -1,51 +1,52 @@
 # Project Summary: mini-cc
 
 ## Overview
-mini-cc is a hands-on, progressive tutorial that teaches how to build an AI coding agent (similar to Claude Code) from scratch using Python. The project is structured as 20 incremental lessons, each adding a new capability on top of a simple agent loop.
+
+mini-cc is a hands-on Python course for building a small terminal coding agent from first principles. The repository contains 20 lesson directories. Each lesson has an independently readable `code.py` implementation and a companion `README.md` explaining the mechanism introduced in that stage.
+
+## Current Status
+
+- Completed: s01-s14 (14/20 lessons, 70%)
+- Latest milestone: s14 Cron Scheduler
+- Planned: s15-s20
+- The root `README.md` contains setup instructions, architecture, detailed progress, and the roadmap.
+
+Later lessons are focused teaching snapshots. They preserve the main agent structure but may omit an earlier advanced subsystem when that keeps the current lesson easier to understand. The complete integration is planned for s20.
 
 ## Technology Stack
-- **Language:** Python
-- **LLM SDK:** Anthropic SDK (also supports alternative providers via `ANTHROPIC_BASE_URL`)
-- **Config:** python-dotenv for environment variables
-- **Serialization:** PyYAML
-- **Testing:** pytest
 
-## Dependencies (from requirements.txt)
-| Package         | Version   | Purpose                            |
-|-----------------|-----------|------------------------------------|
-| anthropic       | >=0.25.0  | Anthropic LLM API client           |
-| python-dotenv   | >=1.0.0   | Load .env files for config/secrets |
-| pyyaml          | >=6.0     | YAML parsing (memory, config, etc.)|
-| pytest          | >=8.0     | Unit/integration testing           |
+- Language: Python 3.10+
+- LLM client: Anthropic Python SDK
+- Provider support: Anthropic API and Anthropic-compatible endpoints through `ANTHROPIC_BASE_URL`
+- Configuration: python-dotenv
+- Serialization: JSON and PyYAML
+- Testing: pytest is included; broader automated coverage is still planned
 
-## Lesson Structure
-Each lesson is a numbered directory (`s01`–`s20`) containing:
-- `code.py` — the working implementation
-- `README.md` — a worksheet template (problem → goal → data flow → new code → changes → verification)
+## Lessons
 
-## Lessons Overview
-| Section | Topic               | Description                                      |
-|---------|---------------------|--------------------------------------------------|
-| s01     | Agent Loop          | Core while-loop: LLM → tool → result → LLM       |
-| s02     | Tool Use            | Expanding toolset beyond just bash               |
-| s03     | Permission          | Sandboxing & permission checks                   |
-| s04     | Hooks               | Pre/post hooks for agent behavior                |
-| s05     | Todo Write          | Task tracking within the agent                   |
-| s06     | Subagent            | Spawning child agents for subtasks               |
-| s07     | Skill Loading       | Dynamically loading reusable skills              |
-| s08     | Context Compact     | Compressing conversation history                 |
-| s09     | Memory              | Persistent memory across sessions                |
-| s10     | System Prompt       | Advanced system prompt engineering               |
-| s11     | Error Recovery      | Graceful error handling and retries              |
-| s12     | Task System         | Structured task management                       |
-| s13     | Background Tasks    | Running tasks in the background                  |
-| s14     | Cron Scheduler      | Scheduled/recurring task execution               |
-| s15     | Agent Teams         | Multi-agent collaboration                        |
-| s16     | Team Protocols      | Communication protocols between agents           |
-| s17     | Autonomous Agents   | Fully autonomous agent behavior                  |
-| s18     | Worktree Isolation  | Git worktree isolation for parallel work         |
-| s19     | MCP Plugin          | Model Context Protocol plugin system             |
-| s20     | Comprehensive       | Bringing everything together                     |
+| Section | Topic | Status |
+| --- | --- | --- |
+| s01 | Agent Loop | Complete |
+| s02 | Tool Use | Complete |
+| s03 | Permission | Complete |
+| s04 | Hooks | Complete |
+| s05 | Todo Write | Complete |
+| s06 | Subagent | Complete |
+| s07 | Skill Loading | Complete |
+| s08 | Context Compact | Complete |
+| s09 | Memory | Complete |
+| s10 | System Prompt | Complete |
+| s11 | Error Recovery | Complete |
+| s12 | Task System | Complete |
+| s13 | Background Tasks | Complete |
+| s14 | Cron Scheduler | Complete |
+| s15 | Agent Teams | Planned |
+| s16 | Team Protocols | Planned |
+| s17 | Autonomous Agents | Planned |
+| s18 | Worktree Isolation | Planned |
+| s19 | MCP Plugin | Planned |
+| s20 | Comprehensive Integration | Planned |
 
-## Note
-- There is no root-level `README.md`. Each lesson has its own `README.md` as a structured worksheet template.
+## Runtime Data
+
+Local secrets and generated state are ignored by Git, including `.env`, `.memory/`, `.tasks/`, `.transcripts/`, `.task_outputs/`, `.worktrees/`, and `.scheduled_tasks.json`.

@@ -1,104 +1,210 @@
-# mini-cc 开发进度说明
+# mini-cc
 
-## 项目目标
-mini-cc 是一个从零开始构建 AI 编程助手（类 Claude Code）的学习与实践项目，目标是通过一系列递进的章节，逐步实现 Agent 的核心能力。
+mini-cc 是一个从零构建 AI 编程 Agent 的开源学习项目。项目参考 Claude Code 一类终端编程助手的工作方式，将 Agent Loop、工具调用、权限、子 Agent、上下文管理、记忆、任务系统、后台任务和定时调度拆成 20 个可以独立阅读与运行的章节。
 
-## 当前开发状态
-项目已经完成了前 9 个章节，当前版本已经具备更完整的规划、任务跟踪、子任务拆分、按需技能加载、上下文压缩与跨会话记忆能力。整体进度可概括为：
+> 本项目不是 Anthropic 官方 Claude Code，也不是生产级替代品。它的重点是用尽量直接的 Python 代码解释 Coding Agent 的核心机制。
 
-- 基础 Agent 循环已完成
-- 工具调用能力已完成
-- 权限控制能力已完成
-- Hooks 机制已接入并完善
-- Todo 写入与任务提醒机制已完成
-- Subagent 分工协作机制已完成
-- Skill Loading 按需技能注入机制已完成
-- Context Compact 上下文压缩与摘要机制已完成
-- Memory 跨会话持久记忆已完成
-- 后续章节正在持续扩展
+## 当前进度
 
-## 已完成内容
+截至 2026-07-22，课程主线已完成 **s01-s14，共 14/20 章（70%）**。
 
-### 1. 基础 Agent Loop
-- 完成最核心的 Agent 执行循环
-- 支持 LLM 生成响应、执行工具、回填结果再继续推理
+- 已完成：s01 Agent Loop 至 s14 Cron Scheduler
+- 当前最新章节：`s14_cron_scheduler`
+- 规划中：s15 Agent Teams 至 s20 Comprehensive
+- 当前代码已通过 Python 语法编译检查
+- 在线模型调用需要在本地 `.env` 中配置有效 API Key
 
-### 2. Tool Use
-- 增加工具调用能力
-- 为 Agent 提供更丰富的执行接口
+需要特别说明：每一章都是聚焦单个机制的教学快照。后续章节会继承主要结构，但可能主动省略上一章中较复杂的实现，以便突出本章主题。因此，`s14` 代表当前学习进度，不等于已经把 s01-s14 的全部高级实现完整合并为一个生产系统；最终整合会在 `s20` 完成。
 
-### 3. Permission
-- 引入权限控制机制
-- 避免不受限制的操作执行
+## 已实现能力
 
-### 4. Hooks
-- 支持前置/后置 Hook
-- 为 Agent 行为扩展提供更灵活的控制点
+| 章节 | 主题 | 核心内容 | 状态 |
+| --- | --- | --- | --- |
+| s01 | Agent Loop | 模型响应、工具结果回填、循环执行 | 已完成 |
+| s02 | Tool Use | Shell 与文件读写等基础工具 | 已完成 |
+| s03 | Permission | 工作区边界和危险操作拦截 | 已完成 |
+| s04 | Hooks | 用户输入、工具调用和停止阶段的扩展点 | 已完成 |
+| s05 | Todo Write | 待办规划、状态更新和遗漏提醒 | 已完成 |
+| s06 | Subagent | 独立上下文的子任务委派与摘要返回 | 已完成 |
+| s07 | Skill Loading | 技能目录扫描和按需加载 `SKILL.md` | 已完成 |
+| s08 | Context Compact | 历史裁剪、工具结果预算、摘要压缩 | 已完成 |
+| s09 | Memory | 跨会话记忆提取、索引、检索和整合 | 已完成 |
+| s10 | System Prompt | 按运行状态组装提示词并缓存稳定结果 | 已完成 |
+| s11 | Error Recovery | 超长上下文恢复、限流退避、模型降级和续写 | 已完成 |
+| s12 | Task System | 持久化任务、依赖关系、领取和完成状态 | 已完成 |
+| s13 | Background Tasks | 慢任务后台执行和完成通知注入 | 已完成 |
+| s14 | Cron Scheduler | Cron 校验、持久化调度、触发队列和自动投递 | 已完成 |
+| s15 | Agent Teams | 多 Agent 团队和角色分工 | 规划中 |
+| s16 | Team Protocols | Agent 间消息与协作协议 | 规划中 |
+| s17 | Autonomous Agents | 更长时间的自主执行与监督 | 规划中 |
+| s18 | Worktree Isolation | Git Worktree 并行工作区隔离 | 规划中 |
+| s19 | MCP Plugin | MCP 与插件扩展机制 | 规划中 |
+| s20 | Comprehensive | 合并前述机制并形成完整 mini-cc | 规划中 |
 
-### 5. Todo Write
-- 新增 todo_write 工具，用于在会话中维护任务清单
-- 支持 pending / in_progress / completed 三种状态
-- 当连续多轮未更新任务时，自动触发提醒，避免任务漂移
+## 当前架构
 
-### 6. Subagent
-- 新增 task 工具，支持为复杂子问题创建子 Agent
-- 子 Agent 使用独立消息上下文，避免污染主线程上下文
-- 子 Agent 仅返回摘要结果，便于父 Agent 汇总与继续推进
+```mermaid
+flowchart LR
+    U["用户输入 / 定时事件"] --> A["Agent Loop"]
+    A --> L["Anthropic 兼容模型"]
+    L --> A
+    A --> D["工具分发器"]
+    D --> F["Shell 与文件工具"]
+    D --> T["任务系统"]
+    D --> B["后台任务"]
+    D --> C["Cron 调度器"]
+    P["System Prompt / Skills / Memory / Context"] --> A
+    F --> A
+    T --> A
+    B --> A
+    C --> A
+```
 
-### 7. Skill Loading
-- 新增技能扫描与注册机制，自动发现 skills 目录中的技能文件
-- 系统提示词内先注入技能目录，避免一开始就加载过多上下文
-- 当模型需要时，可通过 load_skill 工具按需加载完整技能内容
+整体可以分成五层：
 
-### 8. Context Compact
-- 新增四层上下文压缩流水线：预算压缩、消息裁剪、旧结果占位、历史摘要
-- 支持把超大工具结果持久化到磁盘，减少上下文占用
-- 支持在上下文过长时自动触发压缩，避免 API 超长提示词
-
-### 9. Memory
-- 新增持久化记忆系统，使用 .memory 目录保存用户偏好、项目事实和参考信息
-- 支持根据最近对话自动选择相关记忆并注入上下文
-- 支持从对话中自动提取新记忆，并在达到阈值时进行记忆整合
-
-## 进行中 / 下一步
-- 继续推进 System Prompt 与 Error Recovery 等更高级能力
-- 引入 Memory、System Prompt 和 Error Recovery 等高级能力
-- 最终整合成更完整的多模块 Agent 系统
+1. **模型交互层**：使用 Anthropic Python SDK 调用 Anthropic 或兼容服务。
+2. **Agent 循环层**：维护 `messages`，识别 `tool_use`，执行工具并回填 `tool_result`。
+3. **执行工具层**：提供 Shell、文件、任务、后台任务和定时调度工具。
+4. **上下文层**：负责系统提示词、技能、压缩和长期记忆。
+5. **编排层**：逐步加入子 Agent、任务依赖、异步执行和调度队列。
 
 ## 项目结构
-- s01_agent_loop：基础 Agent 循环
-- s02_tool_use：工具调用
-- s03_permission：权限控制
-- s04_hooks：Hook 机制
-- s05_todo_write：任务跟踪
-- s06_subagent：子 Agent
-- s07_skill_loading：技能加载
-- s08_context_compact：上下文压缩
-- s09_memory：记忆能力
-- s10_system_prompt：系统提示词
-- s11_error_recovery：错误恢复
-- s12_task_system：任务系统
-- s13_background_tasks：后台任务
-- s14_cron_scheduler：定时任务
-- s15_agent_teams：多 Agent 协作
-- s16_team_protocols：协作协议
-- s17_autonomous_agents：自主执行
-- s18_worktree_isolation：工作区隔离
-- s19_mcp_plugin：插件扩展
-- s20_comprehensive：综合集成
 
-## 推送历史
-- 2026-07-21：完成 s09_memory 章节并更新项目说明
-- 2026-07-21：完成 s08_context_compact 章节并更新项目说明
-- 2026-07-20：完成 s07_skill_loading 章节并更新项目说明
-- 2026-07-19：完成 s06_subagent 章节并更新项目说明
-- 2026-07-19：完成 s05_todo_write 章节并整理项目说明
-- 2026-07-19：新增项目进度 README
-- 2026-07-19：完成项目初始提交并推送到 GitHub
+```text
+mini-cc/
+├── README.md                  # 项目介绍、进度与运行说明
+├── SUMMARY.md                 # 课程结构摘要
+├── requirements.txt           # Python 依赖
+├── skills/                    # 可按需加载的技能示例
+├── s01_agent_loop/            # 每章包含 code.py 与 README.md
+├── ...
+├── s14_cron_scheduler/        # 当前最新完成章节
+├── s15_agent_teams/           # 后续章节骨架
+└── s20_comprehensive/         # 最终综合版本规划
+```
 
-## 仓库信息
-- GitHub 仓库：https://github.com/ChWjie/mini-cc
-- 当前状态：已完成本地提交并推送到远程仓库
+运行时数据默认保存在 `.memory/`、`.tasks/`、`.transcripts/`、`.task_outputs/` 和 `.scheduled_tasks.json` 中，这些路径以及 `.env` 均已加入 `.gitignore`。
 
-## 说明
-这个 README 会随项目推进持续更新，用于记录当前完成度、已实现能力和后续计划。
+## 快速开始
+
+### 1. 克隆并创建虚拟环境
+
+```bash
+git clone https://github.com/ChWjie/mini-cc.git
+cd mini-cc
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+建议使用 Python 3.10 或更高版本。
+
+### 2. 配置模型
+
+在项目根目录创建 `.env`。使用 Anthropic 官方服务时：
+
+```dotenv
+ANTHROPIC_API_KEY=your-anthropic-api-key
+MODEL_ID=your-model-id
+```
+
+也可以使用支持 Anthropic Messages 协议的兼容服务。例如阿里云百炼千问：
+
+```dotenv
+ANTHROPIC_API_KEY=your-dashscope-api-key
+ANTHROPIC_BASE_URL=https://dashscope.aliyuncs.com/apps/anthropic
+MODEL_ID=qwen3.7-plus
+```
+
+`s11_error_recovery` 还支持可选的备用模型：
+
+```dotenv
+FALLBACK_MODEL_ID=your-fallback-model-id
+```
+
+不要提交 `.env` 或在 Issue、日志、截图中公开 API Key。
+
+### 3. 运行章节
+
+每一章均可独立运行：
+
+```bash
+python s01_agent_loop/code.py
+python s09_memory/code.py
+python s14_cron_scheduler/code.py
+```
+
+运行当前最新版本：
+
+```bash
+python s14_cron_scheduler/code.py
+```
+
+可以尝试输入：
+
+```text
+创建两个存在依赖关系的开发任务，并列出当前任务状态。
+```
+
+或在 s14 中尝试：
+
+```text
+创建一个每 5 分钟执行一次的定时任务，内容是检查当前项目状态。
+```
+
+## s10-s14 本轮进展
+
+### s10 System Prompt
+
+- 将固定系统提示词拆为可组合的 `PROMPT_SECTIONS`
+- 根据工作区、工具和记忆状态动态组装提示词
+- 使用确定性的上下文序列化结果缓存提示词
+
+### s11 Error Recovery
+
+- 对 429 和 529 等临时错误执行指数退避与随机抖动
+- 支持 `FALLBACK_MODEL_ID` 模型降级
+- 对超长上下文执行一次紧急裁剪后重试
+- 对输出截断执行 token 上限升级和有限次数续写
+
+### s12 Task System
+
+- 使用 `.tasks/*.json` 持久化任务
+- 支持 `pending`、`in_progress`、`completed` 状态
+- 支持 `blockedBy` 依赖检查、任务领取和下游解锁提示
+
+### s13 Background Tasks
+
+- 使用守护线程执行耗时工具调用
+- 支持模型显式请求后台运行，也能根据命令特征判断慢任务
+- 通过 `<task_notification>` 将完成结果重新注入 Agent 上下文
+
+### s14 Cron Scheduler
+
+- 支持标准五段 Cron 表达式的基础校验与匹配
+- 支持周期任务、一次性任务、持久化任务和会话任务
+- 提供 `schedule_cron`、`list_crons`、`cancel_cron` 工具
+- 使用调度线程、触发队列和 Agent 锁自动投递到期任务
+
+## 后续计划
+
+1. **s15 Agent Teams**：建立多 Agent 团队、角色、共享任务和生命周期管理。
+2. **s16 Team Protocols**：加入消息邮箱、广播、定向通信和协作状态协议。
+3. **s17 Autonomous Agents**：实现自主领取任务、持续执行、停止条件和人工介入点。
+4. **s18 Worktree Isolation**：为并行 Agent 创建隔离 Git Worktree，减少代码冲突。
+5. **s19 MCP Plugin**：接入 MCP Server，并形成可发现、可配置的插件工具体系。
+6. **s20 Comprehensive**：整合 s01-s19，补充自动化测试、统一配置、CLI 和完整文档。
+
+## 使用边界
+
+- `bash` 工具会执行真实 Shell 命令，请优先在测试仓库或隔离目录中运行。
+- 当前权限系统属于教学实现，不能替代容器、操作系统权限或生产沙箱。
+- Cron 与后台任务使用进程内线程；程序退出后，非持久化运行状态不会保留。
+- 项目当前自动化测试仍不完整，真实模型调用还会受到兼容服务、模型能力和配额影响。
+
+## 仓库
+
+- GitHub: https://github.com/ChWjie/mini-cc
+- 当前里程碑: `s14_cron_scheduler`
+- 下一里程碑: `s15_agent_teams`
